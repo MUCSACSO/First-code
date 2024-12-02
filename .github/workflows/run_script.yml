@@ -5,27 +5,27 @@ on:
     branches:
       - main  # Run workflow on pushes to the main branch
   schedule:
-    - cron: '0 12 * * *'  # Run daily at 12:00 UTC (optional, remove if not needed)
+    - cron: '0 12 * * *'  # Optional: Run daily at 12:00 UTC
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Set up Python environment
+      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10  # Adjust Python version if needed
+          python-version: '3.10'  # Use Python 3.10
 
-      # Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Run the Python script
+      # Step 4: Run the Python script
       - name: Run generate_data.py
         run: python generate_data.py
