@@ -3,6 +3,13 @@ import pandas as pd
 import numpy as np
 
 def generate_drilling_data(directory="data", file_prefix="test_data"):
+    """
+    Generate synthetic drilling data and save it as a CSV file.
+    
+    Parameters:
+        directory (str): Directory to save the output files.
+        file_prefix (str): Prefix for the output file names.
+    """
     # Define depth range
     depths = np.arange(500, 1005, 5)
     num_points = len(depths)
@@ -26,15 +33,26 @@ def generate_drilling_data(directory="data", file_prefix="test_data"):
         wob[i] = np.clip(wob[i-1] + np.random.uniform(-1, 1), 5, 20)
     
     # Save data
-    data = {"Depth (m)": depths, "ROP (m/h)": rop, "RPM": rpm, "Flow Rate (L/min)": fr, "Weight on Bit (tons)": wob}
+    data = {
+        "Depth (m)": depths, 
+        "ROP (m/h)": rop, 
+        "RPM": rpm, 
+        "Flow Rate (L/min)": fr, 
+        "Weight on Bit (tons)": wob
+    }
     df = pd.DataFrame(data)
     
+    # Ensure the output directory exists
     os.makedirs(directory, exist_ok=True)
+    
+    # Generate unique file name for the CSV file
     file_index = 1
-    while os.path.exists(f"{directory}/{file_prefix}_{file_index}.xlsx"):
+    while os.path.exists(f"{directory}/{file_prefix}_{file_index}.csv"):
         file_index += 1
-    file_name = f"{directory}/{file_prefix}_{file_index}.xlsx"
-    df.to_excel(file_name, index=False)
+    file_name = f"{directory}/{file_prefix}_{file_index}.csv"
+    
+    # Save as CSV
+    df.to_csv(file_name, index=False)
     print(f"Data exported to {file_name}")
 
 if __name__ == "__main__":
