@@ -82,7 +82,8 @@ def plot_log(data):
     st.pyplot(fig)
 
 # Streamlit App
-st.title("Enhanced Drilling Data Generator with Visualization")
+st.title("Drilling Data Simulation by Mucsi Balazs")
+st.subheader("University of Szeged, Geology Department")
 st.write("""
 This app generates synthetic drilling data with customizable parameters and provides 
 a visualization in a well log style.
@@ -125,3 +126,11 @@ if st.button("Generate Drilling Data"):
         file_name=f"{file_prefix}.csv",
         mime="text/csv",
     )
+
+# Footer
+st.markdown("""
+---
+**Drilling Data Simulation**  
+University of Szeged, Geology Department  
+2024 © All rights reserved.  
+""")
