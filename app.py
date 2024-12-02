@@ -1,20 +1,25 @@
-import os
 import numpy as np
 import pandas as pd
 import streamlit as st
+import os
 
-def generate_drilling_data(file_prefix="test_data"):
+def generate_drilling_data(start_depth, end_depth, step, max_step_rop, max_step_rpm, max_step_fr, max_step_wob):
     """
     Generate synthetic drilling data and return it as a DataFrame.
     
     Parameters:
-        file_prefix (str): Prefix for the output file names.
-        
+        start_depth (int): Starting depth in meters.
+        end_depth (int): Ending depth in meters.
+        step (int): Step size in meters.
+        max_step_rop (float): Maximum step size for ROP changes.
+        max_step_rpm (float): Maximum step size for RPM changes.
+        max_step_fr (float): Maximum step size for Flow Rate changes.
+        max_step_wob (float): Maximum step size for Weight on Bit changes.
+    
     Returns:
         pd.DataFrame: Generated drilling data.
     """
-    # Define depth range
-    depths = np.arange(500, 1005, 5)
+    depths = np.arange(start_depth, end_depth + step, step)
     num_points = len(depths)
     
     # Initialize parameters with random starting values
@@ -30,12 +35,11 @@ def generate_drilling_data(file_prefix="test_data"):
     
     # Generate gradual changes
     for i in range(1, num_points):
-        rop[i] = np.clip(rop[i-1] + np.random.uniform(-0.5, 0.5), 2, 20)
-        rpm[i] = np.clip(rpm[i-1] + np.random.uniform(-5, 5), 60, 120)
-        fr[i] = np.clip(fr[i-1] + np.random.uniform(-10, 10), 200, 400)
-        wob[i] = np.clip(wob[i-1] + np.random.uniform(-1, 1), 5, 20)
+        rop[i] = np.clip(rop[i-1] + np.random.uniform(-max_step_rop, max_step_rop), 2, 20)
+        rpm[i] = np.clip(rpm[i-1] + np.random.uniform(-max_step_rpm, max_step_rpm), 60, 120)
+        fr[i] = np.clip(fr[i-1] + np.random.uniform(-max_step_fr, max_step_fr), 200, 400)
+        wob[i] = np.clip(wob[i-1] + np.random.uniform(-max_step_wob, max_step_wob), 5, 20)
     
-    # Create data
     data = {
         "Depth (m)": depths, 
         "ROP (m/h)": rop, 
@@ -43,20 +47,37 @@ def generate_drilling_data(file_prefix="test_data"):
         "Flow Rate (L/min)": fr, 
         "Weight on Bit (tons)": wob
     }
-    df = pd.DataFrame(data)
-    return df
+    return pd.DataFrame(data)
 
 # Streamlit App
-st.title("Drilling Data Generator")
+st.title("Enhanced Drilling Data Generator")
 st.write("""
-This app generates synthetic drilling data with random but gradual changes.
-You can download the data as a CSV file.
+This app generates synthetic drilling data with customizable parameters.
+Adjust the settings below to control how the data is generated.
 """)
+
+# Sidebar for configuration
+st.sidebar.header("Configuration")
+
+# Input fields for parameters
+start_depth = st.sidebar.number_input("Start Depth (m)", min_value=0, max_value=10000, value=500, step=10)
+end_depth = st.sidebar.number_input("End Depth (m)", min_value=start_depth, max_value=10000, value=1000, step=10)
+step = st.sidebar.number_input("Step Size (m)", min_value=1, max_value=100, value=5, step=1)
+max_step_rop = st.sidebar.slider("Max Step for ROP", 0.1, 5.0, 0.5)
+max_step_rpm = st.sidebar.slider("Max Step for RPM", 1, 20, 5)
+max_step_fr = st.sidebar.slider("Max Step for Flow Rate", 1, 50, 10)
+max_step_wob = st.sidebar.slider("Max Step for Weight on Bit", 0.1, 5.0, 1.0)
+
+# File name input
+file_prefix = st.sidebar.text_input("File Prefix", value="test_data")
 
 # Generate Data Button
 if st.button("Generate Drilling Data"):
     st.write("Generating data...")
-    data = generate_drilling_data()
+    data = generate_drilling_data(
+        start_depth, end_depth, step, 
+        max_step_rop, max_step_rpm, max_step_fr, max_step_wob
+    )
     st.write("Data preview:")
     st.dataframe(data.head())
     
@@ -65,6 +86,6 @@ if st.button("Generate Drilling Data"):
     st.download_button(
         label="Download CSV",
         data=csv,
-        file_name="drilling_data.csv",
+        file_name=f"{file_prefix}.csv",
         mime="text/csv",
     )
