@@ -82,7 +82,7 @@ def plot_log(data):
     st.pyplot(fig)
 
 # Streamlit App
-st.title("Drilling Data Simulation by Mucsi Balazs")
+st.title("Drilling Data Simulation by Mucsi Balázs")
 st.subheader("University of Szeged, Geology Department")
 st.write("""
 This app generates synthetic drilling data with customizable parameters and provides 
