@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
-import os
+import matplotlib.pyplot as plt
 
 def generate_drilling_data(start_depth, end_depth, step, max_step_rop, max_step_rpm, max_step_fr, max_step_wob):
     """
@@ -49,11 +49,43 @@ def generate_drilling_data(start_depth, end_depth, step, max_step_rop, max_step_
     }
     return pd.DataFrame(data)
 
+def plot_log(data):
+    """
+    Plot a well log-style visualization for the data.
+    
+    Parameters:
+        data (pd.DataFrame): Drilling data to visualize.
+    """
+    fig, axes = plt.subplots(1, 4, figsize=(12, 6), sharey=True)
+    fig.suptitle("Well Log Visualization", fontsize=16)
+
+    # Plot each parameter
+    axes[0].plot(data["ROP (m/h)"], data["Depth (m)"], label="ROP", color='blue')
+    axes[0].set_xlabel("ROP (m/h)")
+    axes[0].invert_yaxis()  # Depth increases downward
+    axes[0].grid(True)
+    
+    axes[1].plot(data["RPM"], data["Depth (m)"], label="RPM", color='green')
+    axes[1].set_xlabel("RPM")
+    axes[1].grid(True)
+    
+    axes[2].plot(data["Flow Rate (L/min)"], data["Depth (m)"], label="Flow Rate", color='orange')
+    axes[2].set_xlabel("Flow Rate (L/min)")
+    axes[2].grid(True)
+    
+    axes[3].plot(data["Weight on Bit (tons)"], data["Depth (m)"], label="Weight on Bit", color='red')
+    axes[3].set_xlabel("Weight on Bit (tons)")
+    axes[3].grid(True)
+    
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.88)  # Adjust for the title
+    st.pyplot(fig)
+
 # Streamlit App
-st.title("Enhanced Drilling Data Generator")
+st.title("Enhanced Drilling Data Generator with Visualization")
 st.write("""
-This app generates synthetic drilling data with customizable parameters.
-Adjust the settings below to control how the data is generated.
+This app generates synthetic drilling data with customizable parameters and provides 
+a visualization in a well log style.
 """)
 
 # Sidebar for configuration
@@ -80,6 +112,10 @@ if st.button("Generate Drilling Data"):
     )
     st.write("Data preview:")
     st.dataframe(data.head())
+    
+    # Visualization
+    st.write("Visualization:")
+    plot_log(data)
     
     # Convert data to CSV for download
     csv = data.to_csv(index=False)
