@@ -29,3 +29,10 @@ jobs:
       # Step 4: Run the Python script
       - name: Run generate_data.py
         run: python generate_data.py
+
+      # Step 5: Upload the generated CSV files as an artifact
+      - name: Upload CSV files
+        uses: actions/upload-artifact@v3
+        with:
+          name: drilling-data-csv
+          path: data/*.csv  # Adjust the path if the directory is different
